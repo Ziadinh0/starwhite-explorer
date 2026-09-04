@@ -1,4 +1,4 @@
-﻿// --- Position de départ : paramètres URL (lancement) ou localStorage (F5) ---
+// --- Position de départ : paramètres URL (lancement) ou localStorage (F5) ---
 // Les paramètres URL sont immunisés contre toute race condition localStorage.
 // Après lecture, on nettoie l'URL pour que F5 utilise la dernière position (shipLat/shipLon).
 (function() {
@@ -8,9 +8,10 @@
     if (!isNaN(sLat) && !isNaN(sLon)) {
         localStorage.setItem("shipLat", sLat.toString());
         localStorage.setItem("shipLon", sLon.toString());
-        // Nettoyer l'URL : F5 ne réutilisera pas ces params
+        // Nettoyer l'URL : conserver captain=1 si présent, retirer spawnLat/spawnLon
         if (window.history && window.history.replaceState) {
-            window.history.replaceState(null, '', 'StarwhiteExplorer.html');
+            var captainVal = urlParams.get('captain') === '1' ? '?captain=1' : '';
+            window.history.replaceState(null, '', 'StarwhiteExplorer.html' + captainVal);
         }
     }
     // Nettoyer les anciens flags localStorage (vestiges des tentatives précédentes)
