@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Starwhite Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #38bdf8;
+            letter-spacing: 1px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1000px) {
+            .content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.62);
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 8px 32px rgba(56, 189, 248, 0.1);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            color: #38bdf8;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .qr-box {
+            text-align: center;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(50, 50, 50, 0.3);
+            border: 2px dashed rgba(56, 189, 248, 0.5);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-box img {
+            max-width: 100%;
+            max-height: 220px;
+            object-fit: contain;
+        }
+
+        .qr-box.empty {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .qr-upload {
+            display: none;
+        }
+
+        .qr-upload.editable {
+            display: block;
+        }
+
+        .upload-label {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .upload-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .upload-label input[type="file"] {
+            display: none;
+        }
+
+        .info-section {
+            background: rgba(15, 23, 42, 0.62);
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(12px);
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+
+        .info-section h2 {
+            font-size: 18px;
+            color: #38bdf8;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: rgba(50, 50, 50, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #38bdf8;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e2e8f0;
+            word-break: break-all;
+        }
+
+        .info-item input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: monospace;
+            transition: all 0.3s ease;
+        }
+
+        .info-item input:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+        }
+
+        .mode-badge {
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .mode-badge.edit {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .editable-section {
+            display: none;
+        }
+
+        .editable-section.show {
+            display: block;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .advice-section {
+            background: rgba(59, 130, 246, 0.15);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin: 40px 0;
+        }
+
+        .advice-section a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid #60a5fa;
+        }
+
+        .advice-section a:hover {
+            color: #93c5fd;
+            border-bottom-color: #93c5fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1>📞 Contact</h1>
+            </div>
+            <span class="mode-badge" id="modeBadge">Lecture Seule</span>
+        </div>
+
+        <div id="message"></div>
+
+        <!-- QR CODES WHATSAPP -->
+        <div class="content" id="qrCodesContainer">
+            <div class="card">
+                <h2>🎯 DECISION</h2>
+                <div class="qr-box" id="qr1">
+                    <div class="qr-box empty">Pas de QR code</div>
+                </div>
+                <div class="qr-upload editable" id="upload1">
+                    <label class="upload-label">
+                        📱 Upload QR Code
+                        <input type="file" accept="image/*" onchange="handleQRUpload(event, 1)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 SITUATION</h2>
+                <div class="qr-box" id="qr2">
+                    <div class="qr-box empty">Pas de QR code</div>
+                </div>
+                <div class="qr-upload editable" id="upload2">
+                    <label class="upload-label">
+                        📱 Upload QR Code
+                        <input type="file" accept="image/*" onchange="handleQRUpload(event, 2)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💬 COMMUNICATION</h2>
+                <div class="qr-box" id="qr3">
+                    <div class="qr-box empty">Pas de QR code</div>
+                </div>
+                <div class="qr-upload editable" id="upload3">
+                    <label class="upload-label">
+                        📱 Upload QR Code
+                        <input type="file" accept="image/*" onchange="handleQRUpload(event, 3)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔮 ANTICIPATION</h2>
+                <div class="qr-box" id="qr4">
+                    <div class="qr-box empty">Pas de QR code</div>
+                </div>
+                <div class="qr-upload editable" id="upload4">
+                    <label class="upload-label">
+                        📱 Upload QR Code
+                        <input type="file" accept="image/*" onchange="handleQRUpload(event, 4)">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONSEIL WHATSAPP -->
+        <div class="advice-section">
+            💡 <strong>Conseil :</strong> Nous vous conseillons d'utiliser WhatsApp sur votre ordinateur : <a href="https://www.whatsapp.com/" target="_blank">https://www.whatsapp.com/</a>
+        </div>
+
+        <!-- LINK ET LOGIN -->
+        <div class="info-section">
+            <h2>SocialRoom Access</h2>
+            
+            <div class="info-grid">
+                <!-- Lien SocialRoom -->
+                <div class="info-item">
+                    <label>Lien SocialRoom</label>
+                    <div class="value" id="linkDisplay"><a href="https://socialroom2.fullex.fr" target="_blank" style="color: #38bdf8; text-decoration: none; cursor: pointer;">https://socialroom2.fullex.fr</a></div>
+                    <input type="text" id="linkInput" placeholder="URL" style="display: none;">
+                </div>
+
+                <!-- Login -->
+                <div class="info-item">
+                    <label>Login</label>
+                    <div class="value" id="loginDisplay">Explorer</div>
+                    <input type="text" id="loginInput" placeholder="Login" style="display: none;">
+                </div>
+
+                <!-- Mot de Passe -->
+                <div class="info-item">
+                    <label>Mot de Passe</label>
+                    <div class="value" id="passwordDisplay">XexplorerX</div>
+                    <input type="text" id="passwordInput" placeholder="Mot de passe" style="display: none;">
+                </div>
+            </div>
+
+            <!-- Boutons édition (visibles seulement en mode édition) -->
+            <div class="editable-section" id="editButtonsSection">
+                <div class="button-group">
+                    <button class="btn btn-save" onclick="saveContact()">✓ Sauvegarder</button>
+                    <button class="btn btn-cancel" onclick="cancelEdit()">✗ Annuler</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton édition global (visible seulement en mode édition) -->
+        <div class="editable-section" id="globalEditButton">
+            <button class="btn btn-save" onclick="enableEdit()" style="width: 100%; padding: 15px;">✏️ Modifier les Paramètres</button>
+        </div>
+    </div>
+
+    <script>
+        // Déterminer le mode (lecture seule vs éditable)
+        const urlParams = new URLSearchParams(window.location.search);
+        const isReadOnly = urlParams.get('mode') === 'view';
+        
+        // Données par défaut
+        const defaultData = {
+            link: 'https://socialroom2.fullex.fr',
+            login: 'Explorer',
+            password: 'XexplorerX',
+            qr1: null,
+            qr2: null,
+            qr3: null,
+            qr4: null
+        };
+
+        // Charger les données au démarrage
+        function loadData() {
+            const stored = localStorage.getItem('contactData');
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            return defaultData;
+        }
+
+        // Sauvegarder les données
+        function saveData(data) {
+            localStorage.setItem('contactData', JSON.stringify(data));
+        }
+
+        // Initialiser la page
+        function initPage() {
+            const data = loadData();
+            
+            // Afficher le mode
+            const modeBadge = document.getElementById('modeBadge');
+            modeBadge.textContent = isReadOnly ? '👁️ Lecture Seule' : '✏️ Mode Édition';
+            modeBadge.classList.toggle('edit', !isReadOnly);
+
+            // Masquer/afficher les sections d'édition
+            document.querySelectorAll('.editable-section').forEach(el => {
+                el.classList.toggle('show', !isReadOnly);
+            });
+
+            document.querySelectorAll('.qr-upload.editable').forEach(el => {
+                el.classList.toggle('editable', !isReadOnly);
+            });
+
+            // Charger les données
+            displayData(data);
+        }
+
+        // Afficher les données
+        function displayData(data) {
+            // Afficher les QR codes
+            for (let i = 1; i <= 4; i++) {
+                const qrKey = `qr${i}`;
+                const qrBox = document.getElementById(`qr${i}`);
+                
+                if (data[qrKey]) {
+                    qrBox.innerHTML = `<img src="${data[qrKey]}" alt="QR Code ${i}">`;
+                } else {
+                    qrBox.innerHTML = '<div class="qr-box empty">Pas de QR code</div>';
+                }
+            }
+
+            // Afficher les infos
+            document.getElementById('linkDisplay').innerHTML = `<a href="${data.link}" target="_blank" style="color: #38bdf8; text-decoration: none; cursor: pointer;">${data.link}</a>`;
+            document.getElementById('loginDisplay').textContent = data.login;
+            document.getElementById('passwordDisplay').textContent = data.password;
+
+            // Remplir les inputs (mode édition)
+            document.getElementById('linkInput').value = data.link;
+            document.getElementById('loginInput').value = data.login;
+            document.getElementById('passwordInput').value = data.password;
+        }
+
+        // Upload QR code
+        function handleQRUpload(event, number) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = loadData();
+                data[`qr${number}`] = e.target.result;  // Stocker en base64
+                saveData(data);
+                displayData(data);
+                showMessage(`QR Code ${number} uploadé avec succès`, 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Activer édition
+        function enableEdit() {
+            document.querySelectorAll('.info-item .value').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.info-item input').forEach(el => {
+                el.style.display = 'block';
+            });
+            document.getElementById('editButtonsSection').classList.add('show');
+            document.getElementById('globalEditButton').classList.remove('show');
+        }
+
+        // Sauvegarder modifications
+        function saveContact() {
+            const data = loadData();
+            data.link = document.getElementById('linkInput').value || defaultData.link;
+            data.login = document.getElementById('loginInput').value || defaultData.login;
+            data.password = document.getElementById('passwordInput').value || defaultData.password;
+            
+            if (!data.link.trim() || !data.login.trim() || !data.password.trim()) {
+                showMessage('❌ Tous les champs doivent être remplis', 'error');
+                return;
+            }
+
+            saveData(data);
+            displayData(data);
+            
+            document.querySelectorAll('.info-item .value').forEach(el => {
+                el.style.display = 'block';
+            });
+            document.querySelectorAll('.info-item input').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.getElementById('editButtonsSection').classList.remove('show');
+            document.getElementById('globalEditButton').classList.add('show');
+            
+            showMessage('✓ Paramètres sauvegardés avec succès', 'success');
+        }
+
+        // Annuler édition
+        function cancelEdit() {
+            const data = loadData();
+            displayData(data);
+            
+            document.querySelectorAll('.info-item .value').forEach(el => {
+                el.style.display = 'block';
+            });
+            document.querySelectorAll('.info-item input').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.getElementById('editButtonsSection').classList.remove('show');
+            document.getElementById('globalEditButton').classList.add('show');
+        }
+
+        // Afficher message
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${type}`;
+            setTimeout(() => {
+                msgDiv.textContent = '';
+                msgDiv.className = '';
+            }, 4000);
+        }
+
+        // Retour
+        function goBack() {
+            window.history.back();
+        }
+
+        // Initialiser
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

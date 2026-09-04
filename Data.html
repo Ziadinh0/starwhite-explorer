@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Center - Starwhite Explorer</title>
+    <link rel="stylesheet" href="sw.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .data-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .data-header h1 {
+            font-size: 28px;
+            color: #38bdf8;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #60a5fa;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateX(-5px);
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(50, 50, 50, 0.5);
+            border: 2px solid rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border-bottom: none;
+        }
+
+        .tab-btn:hover {
+            background: rgba(100, 100, 100, 0.5);
+        }
+
+        .tab-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Carousel */
+        .carousel-container {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .carousel-slide.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .carousel-slide img {
+            max-width: 100%;
+            max-height: 800px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .carousel-btn {
+            padding: 10px 15px;
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            color: #60a5fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(56, 189, 248, 0.3);
+        }
+
+        .carousel-indicator {
+            padding: 8px 12px;
+            background: rgba(50, 50, 50, 0.5);
+            border-radius: 4px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* Capitainerie Section */
+        .section-title {
+            font-size: 22px;
+            color: #38bdf8;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Crew Management */
+        .crew-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .crew-card-last-full {
+            grid-column: 1 / -1;
+        }
+
+        .crew-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .crew-card:hover {
+            border-color: rgba(56, 189, 248, 0.6);
+            background: rgba(30, 41, 59, 0.95);
+            transform: translateY(-5px);
+        }
+
+        .crew-photo {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .crew-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 5px;
+        }
+
+        .crew-position {
+            font-size: 13px;
+            color: #38bdf8;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .crew-description {
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+
+        .crew-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .crew-btn {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #60a5fa;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .crew-btn:hover {
+            background: rgba(56, 189, 248, 0.3);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            color: #38bdf8;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #38bdf8;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn-save {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.5);
+        }
+
+        .modal-btn-save:hover {
+            background: rgba(34, 197, 94, 0.3);
+        }
+
+        .modal-btn-cancel {
+            background: rgba(107, 114, 128, 0.2);
+            color: #cbd5e1;
+            border: 1px solid rgba(107, 114, 128, 0.4);
+        }
+
+        .modal-btn-cancel:hover {
+            background: rgba(107, 114, 128, 0.3);
+        }
+
+        /* Navire Section */
+        .ponts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .pont-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .pont-card:hover {
+            border-color: rgba(56, 189, 248, 0.6);
+            transform: translateY(-5px);
+        }
+
+        .pont-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .pont-info {
+            padding: 15px;
+        }
+
+        .pont-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #38bdf8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .data-container {
+                padding: 15px;
+            }
+
+            .data-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .tabs-nav {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1;
+            }
+
+            .crew-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .crew-card-last-full {
+                grid-column: span 1;
+            }
+
+            .carousel-slide img {
+                max-height: 400px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="data-container">
+        <!-- Header -->
+        <div class="data-header">
+            <h1>📊 Data Center - Starwhite Explorer</h1>
+            <button class="back-btn" onclick="window.history.back();">← Retour</button>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('capitainerie')">🏛️ Capitainerie</button>
+            <button class="tab-btn" onclick="switchTab('navire')">🚢 Navire</button>
+        </div>
+
+        <!-- Capitainerie Tab -->
+        <div id="capitainerie" class="tab-content active">
+            <!-- Organigramme Carousel -->
+            <div class="carousel-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 class="section-title">📋 Organigramme de la Capitainerie</h3>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="file" id="organigrammeUpload" accept="image/*" style="display: none;">
+                        <button class="carousel-btn" onclick="document.getElementById('organigrammeUpload').click()" style="padding: 8px 14px; font-size: 13px;">📸 Uploader Photo</button>
+                    </div>
+                </div>
+                <div class="carousel">
+                    <div class="carousel-slide active">
+                        <img id="organigrammeImg" src="assets/Capitainerie/Equipage/Organigramme.png" alt="Organigramme">
+                    </div>
+                </div>
+                <div class="carousel-controls">
+                    <button class="carousel-btn" onclick="prevSlide('organigramme')">← Précédent</button>
+                    <span class="carousel-indicator"><span id="organigramme-current">1</span> / <span id="organigramme-total">1</span></span>
+                    <button class="carousel-btn" onclick="nextSlide('organigramme')">Suivant →</button>
+                </div>
+            </div>
+
+            <!-- Crew Management -->
+            <h3 class="section-title">👥 Capitainerie</h3>
+            <div class="crew-grid" id="crew-grid">
+                <!-- Crew cards dynamically loaded -->
+            </div>
+        </div>
+
+        <!-- Navire Tab -->
+        <div id="navire" class="tab-content">
+            <!-- Introduction Section -->
+            <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 25px; margin-bottom: 30px;">
+                <h3 style="font-size: 20px; color: #38bdf8; margin-bottom: 15px;">🌊 Découvrez nos Suites</h3>
+                <p style="font-size: 15px; color: #e2e8f0; line-height: 1.6; margin-bottom: 15px;">
+                    <strong>Vous pouvez admirer l'océan depuis nos 461 suites côté mer :</strong>
+                </p>
+                <ul style="margin-left: 30px; font-size: 14px; color: #cbd5e1; line-height: 1.8;">
+                    <li>1 Owner's Residence</li>
+                    <li>22 Ocean Residences</li>
+                    <li>67 Ocean Penthouses</li>
+                    <li>371 Ocean Terrace et Ocean Grand Terrace Suites</li>
+                    <li>Y compris 78 suites communicantes multigénérationnelles</li>
+                </ul>
+                <p style="font-size: 14px; color: #cbd5e1; margin-top: 15px; font-style: italic;">
+                    D'une superficie minimale de 35 m², nos suites font partie des plus spacieuses du secteur des croisières haut de gamme.
+                </p>
+            </div>
+
+            <!-- Plans des Ponts Carousel -->
+            <div class="carousel-container">
+                <h3 class="section-title">🗺️ Plans des Ponts</h3>
+                <div class="carousel">
+                    <div class="carousel-slide active">
+                        <img src="assets/Navire/Ponts/Diapositive1.PNG" alt="Pont 1">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="assets/Navire/Ponts/Diapositive2.PNG" alt="Pont 2">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="assets/Navire/Ponts/Diapositive3.PNG" alt="Pont 3">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="assets/Navire/Ponts/Diapositive4.PNG" alt="Pont 4">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="assets/Navire/Ponts/Diapositive5.PNG" alt="Pont 5">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="assets/Navire/Ponts/Diapositive6.PNG" alt="Pont 6">
+                    </div>
+                </div>
+                <div class="carousel-controls">
+                    <button class="carousel-btn" onclick="prevSlide('ponts')">← Précédent</button>
+                    <span class="carousel-indicator"><span id="ponts-current">1</span> / <span id="ponts-total">6</span></span>
+                    <button class="carousel-btn" onclick="nextSlide('ponts')">Suivant →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Crew Modal -->
+    <div id="crew-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Modifier Équipage</span>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Nom</label>
+                <input type="text" id="crew-name" placeholder="Nom complet">
+            </div>
+            <div class="form-group">
+                <label>Poste</label>
+                <input type="text" id="crew-position" placeholder="Ex: Capitaine, Médecin Chef...">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="crew-description" placeholder="Describez le rôle et les responsabilités..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>URL Photo (ou drag & drop)</label>
+                <input type="text" id="crew-photo-url" placeholder="assets/images/photo.png">
+                <small style="color: #94a3b8; margin-top: 5px; display: block;">Ou importez une image ci-dessous:</small>
+                <input type="file" id="crew-photo-file" accept="image/*" style="margin-top: 8px;">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-save" onclick="saveCrew()">✓ Sauvegarder</button>
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default crew data - Équipage réel du Starwhite Explorer
+        const DEFAULT_CREW = [
+            {
+                id: 1,
+                name: 'Capitaine Serena MELANI',
+                position: 'Capitaine',
+                description: 'À la barre de l\'Explorer depuis 18 mois, Serena Melani a forgé sa réputation dans des conditions météo difficiles. Reconnue pour son leadership affirmé et sa proximité avec les voyageurs, elle considère que l\'ambiance à bord fait partie intégrante de la sécurité. Elle a navigué sur trois compagnies différentes en cinq ans.',
+                photo: 'assets/Capitainerie/Equipage/Capitaine Serena MELANI.png'
+            },
+            {
+                id: 2,
+                name: 'Alex NUZZO',
+                position: 'Officier de navigation / Radio',
+                description: 'Alexandre Nuzzo cumule 12 ans d\'expérience en navigation côtière et hauturière. Méticuleux et discret, il est l\'homme des procédures et des protocoles. Il lui arrive de prendre du temps avant de répondre, mais ses analyses sont rarement prises en défaut.',
+                photo: 'assets/Capitainerie/Equipage/Officier de navigation - Radio  Alex NUZZO.png'
+            },
+            {
+                id: 3,
+                name: 'Dr. Claire GENEVE',
+                position: 'Officier de Santé',
+                description: 'Formée à la faculté de médecine de Lyon, Claire Genève a orienté sa carrière vers la médecine préventive et le bien-être. Elle a rejoint le monde de la croisière après plusieurs années en cabinet de ville, attirée par l\'aspect global de la santé en milieu isolé. Elle n\'a jamais exercé aux urgences.',
+                photo: 'assets/Capitainerie/Equipage/Officier de santé - Dr Claire GENEVE.png'
+            },
+            {
+                id: 4,
+                name: 'Rob BRIFFA',
+                position: 'Officier Mécanicien',
+                description: 'Formé à la mécanique navale à Brest, Rob Briffa a passé huit ans dans la marine nationale avant de rejoindre le secteur civil. Il est connu pour son sens de l\'initiative et sa capacité à improviser des solutions techniques en situation dégradée. Il préfère agir plutôt qu\'attendre une validation.',
+                photo: 'assets/Capitainerie/Equipage/Officier mécanicien - Rob BRIFFA.png'
+            },
+            {
+                id: 5,
+                name: 'Veerle BOULANGER',
+                position: 'Officier d\'Hospitalité',
+                description: 'Diplômée de l\'école hôtelière Les Roches en Suisse, Veerle Boulanger a fait de l\'expérience passager sa priorité absolue. Toujours disponible, elle anticipe les besoins avant même qu\'ils soient exprimés. Son attention au détail est légendaire à bord — parfois au point de perdre de vue l\'essentiel.',
+                photo: 'assets/Capitainerie/Equipage/Officier chargé de l\'hospitalité - Veerle BOULANGER.png'
+            },
+            {
+                id: 6,
+                name: 'Fiona FARQUAD',
+                position: 'Officier de Sécurité',
+                description: 'Ancienne militaire reconvertie dans la sécurité maritime, Fiona Farquad gère la sûreté et la sécurité du navire avec rigueur. Elle applique les protocoles à la lettre et ne prend aucune décision sans cadre réglementaire établi.',
+                photo: 'assets/Capitainerie/Equipage/Officier de sécurité - Fiona FARQUAD.png'
+            },
+            {
+                id: 7,
+                name: 'Chef Atche, Trap, Dalloz & Marinelli',
+                position: 'Chefs de Cuisine',
+                description: 'Ils sont responsables des cuisines et de la logistique alimentaire. Ils cumulent à eux quatre plus de 10 étoiles Michelin. Mais pour eux, peu importe Michelin. En mer, une seule étoile compte plus que tout : l\'étoile Polaire StarWhite.',
+                photo: 'assets/Capitainerie/Equipage/Les 4 Chefs (cuisine) Chefs, Atche, Trap, Dalloz et Marinelli.png'
+            }
+        ];
+
+        let currentEditingCrew = null;
+        let carouselPositions = { organigramme: 0, ponts: 0 };
+        let viewMode = false;  // Mode lecture seule
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Détecter le mode depuis l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            viewMode = urlParams.get('mode') === 'view';
+            
+            loadCrew();
+            updateCarouselIndicators();
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Carousel functions
+        function nextSlide(carouselName) {
+            const slides = document.querySelectorAll(`#${carouselName === 'organigramme' ? 'capitainerie' : 'navire'} .carousel-slide`);
+            const maxSlides = slides.length;
+            carouselPositions[carouselName] = (carouselPositions[carouselName] + 1) % maxSlides;
+            updateCarousel(carouselName);
+        }
+
+        function prevSlide(carouselName) {
+            const slides = document.querySelectorAll(`#${carouselName === 'organigramme' ? 'capitainerie' : 'navire'} .carousel-slide`);
+            const maxSlides = slides.length;
+            carouselPositions[carouselName] = (carouselPositions[carouselName] - 1 + maxSlides) % maxSlides;
+            updateCarousel(carouselName);
+        }
+
+        function updateCarousel(carouselName) {
+            const tabId = carouselName === 'organigramme' ? 'capitainerie' : 'navire';
+            const slides = document.querySelectorAll(`#${tabId} .carousel-slide`);
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+            });
+            slides[carouselPositions[carouselName]].classList.add('active');
+            updateCarouselIndicators();
+        }
+
+        function updateCarouselIndicators() {
+            document.getElementById('organigramme-current').textContent = carouselPositions.organigramme + 1;
+            document.getElementById('ponts-current').textContent = carouselPositions.ponts + 1;
+        }
+
+        // Crew management
+        function loadCrew() {
+            const crewData = JSON.parse(localStorage.getItem('starwhite_crew')) || DEFAULT_CREW;
+            const grid = document.getElementById('crew-grid');
+            grid.innerHTML = '';
+
+            crewData.forEach(crew => {
+                const card = document.createElement('div');
+                card.className = 'crew-card';
+                
+                // En mode lecture, pas de boutons
+                const actionsHTML = viewMode ? 
+                    `` :
+                    `<div class="crew-actions">
+                        <button class="crew-btn" onclick="openModal(${crew.id})">✏️ Modifier</button>
+                        <button class="crew-btn" onclick="deleteCrew(${crew.id})" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;">🗑️ Supprimer</button>
+                    </div>`;
+                
+                card.innerHTML = `
+                    <img src="${crew.photo}" alt="${crew.name}" class="crew-photo" onclick="${!viewMode ? `openModal(${crew.id})` : ''}">
+                    <div class="crew-name">${crew.name}</div>
+                    <div class="crew-position">${crew.position}</div>
+                    <div class="crew-description">${crew.description}</div>
+                    ${actionsHTML}
+                `;
+                grid.appendChild(card);
+            });
+
+            // Ajouter la classe à la dernière carte d'équipage pour qu'elle s'étende sur 3 colonnes
+            if (crewData.length > 0) {
+                const lastCrewCard = grid.children[crewData.length - 1];
+                lastCrewCard.classList.add('crew-card-last-full');
+            }
+
+            // Add new crew button (seulement en mode édition)
+            if (!viewMode) {
+                const addBtn = document.createElement('div');
+                addBtn.className = 'crew-card';
+                addBtn.style.display = 'flex';
+                addBtn.style.justifyContent = 'center';
+                addBtn.style.alignItems = 'center';
+                addBtn.style.minHeight = '350px';
+                addBtn.innerHTML = `
+                    <button class="crew-btn" onclick="openModal(null)" style="padding: 15px 30px; font-size: 18px; width: 100%; height: 60px;">➕ Ajouter Membre</button>
+                `;
+                grid.appendChild(addBtn);
+            }
+        }
+
+        function openModal(crewId) {
+            // Bloquer en mode lecture seule
+            if (viewMode) {
+                alert('Mode lecture seule. Utilisez le lien "📊 Data" depuis le contrôle pour modifier.');
+                return;
+            }
+            
+            const modal = document.getElementById('crew-modal');
+            const crewData = JSON.parse(localStorage.getItem('starwhite_crew')) || DEFAULT_CREW;
+
+            if (crewId !== null) {
+                currentEditingCrew = crewData.find(c => c.id === crewId);
+                document.getElementById('crew-name').value = currentEditingCrew.name;
+                document.getElementById('crew-position').value = currentEditingCrew.position;
+                document.getElementById('crew-description').value = currentEditingCrew.description;
+                document.getElementById('crew-photo-url').value = currentEditingCrew.photo;
+            } else {
+                currentEditingCrew = null;
+                document.getElementById('crew-name').value = '';
+                document.getElementById('crew-position').value = '';
+                document.getElementById('crew-description').value = '';
+                document.getElementById('crew-photo-url').value = '';
+            }
+
+            document.getElementById('crew-photo-file').value = '';
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('crew-modal').classList.remove('active');
+            currentEditingCrew = null;
+        }
+
+        function saveCrew() {
+            const name = document.getElementById('crew-name').value.trim();
+            const position = document.getElementById('crew-position').value.trim();
+            const description = document.getElementById('crew-description').value.trim();
+            let photo = document.getElementById('crew-photo-url').value.trim();
+
+            if (!name || !position) {
+                alert('Veuillez remplir le nom et le poste');
+                return;
+            }
+
+            // Handle file upload
+            const fileInput = document.getElementById('crew-photo-file');
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photo = e.target.result;
+                    saveCrweData(name, position, description, photo);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveCrweData(name, position, description, photo);
+            }
+        }
+
+        function saveCrweData(name, position, description, photo) {
+            let crewData = JSON.parse(localStorage.getItem('starwhite_crew')) || DEFAULT_CREW;
+
+            if (currentEditingCrew) {
+                // Update existing
+                const crew = crewData.find(c => c.id === currentEditingCrew.id);
+                crew.name = name;
+                crew.position = position;
+                crew.description = description;
+                crew.photo = photo || crew.photo;
+            } else {
+                // Add new
+                const newCrew = {
+                    id: Math.max(...crewData.map(c => c.id), 0) + 1,
+                    name,
+                    position,
+                    description,
+                    photo: photo || 'assets/images/navire.png'
+                };
+                crewData.push(newCrew);
+            }
+
+            localStorage.setItem('starwhite_crew', JSON.stringify(crewData));
+            closeModal();
+            loadCrew();
+            alert('✓ Équipage sauvegardé avec succès!');
+        }
+
+        function deleteCrew(crewId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce membre?')) {
+                let crewData = JSON.parse(localStorage.getItem('starwhite_crew')) || DEFAULT_CREW;
+                crewData = crewData.filter(c => c.id !== crewId);
+                localStorage.setItem('starwhite_crew', JSON.stringify(crewData));
+                loadCrew();
+                alert('✓ Membre supprimé');
+            }
+        }
+
+        // Close modal on background click
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('crew-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Handle organigramme photo upload
+        document.getElementById('organigrammeUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Sauvegarder la photo en localStorage
+                    localStorage.setItem('organigramme_photo', event.target.result);
+                    // Mettre à jour l'image affichée
+                    document.getElementById('organigrammeImg').src = event.target.result;
+                    alert('✓ Photo d\'organigramme mise à jour avec succès!');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Charger l'organigramme depuis localStorage au démarrage
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedOrganigramme = localStorage.getItem('organigramme_photo');
+            if (savedOrganigramme) {
+                document.getElementById('organigrammeImg').src = savedOrganigramme;
+            }
+        });
+    </script>
+</body>
+</html>

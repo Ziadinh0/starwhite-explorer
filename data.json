@@ -1,0 +1,81 @@
+{
+    "scenarios": [
+      {
+        "name": "Scénario 1 - EastMed",
+        "navire": {
+          "latitude": 32.48075,
+          "longitude": 33.21203,
+          "vitesse": 18,
+          "cap": 12
+        },
+        "tempete": {
+          "latitude": 35.0,
+          "longitude": 35.0,
+          "vitesse": 80,
+          "cap": 190,
+          "coeur": 50,
+          "front": 170
+        },
+        "ports": [
+          { "name": "Venise", "lat": 45.4408, "lon": 12.3155 },
+          { "name": "Dubrovnik", "lat": 42.6507, "lon": 18.0944 },
+          { "name": "Syracuse", "lat": 37.0755, "lon": 15.2866 },
+          { "name": "Alexandrie", "lat": 31.2156, "lon": 29.9553 },
+          { "name": "Athènes", "lat": 37.9838, "lon": 23.7275 }
+        ],
+        "equipements": {
+          "stabilisateur": "OFF",
+          "ge1": "OK",
+          "ge2": "OK",
+          "ge3": "OK",
+          "ge4": "EnMaintenance",
+          "carburant": 96,
+          "puissanceMoteur": 77
+        },
+        "etatNavire": {
+          "tangage": "normal",
+          "roulis": "normal",
+          "lacet": "normal"
+        }
+      },
+      {
+        "name": "Scénario 2 - South of France",
+        "navire": {
+          "latitude": 42.817926,
+          "longitude": 6.630579,
+          "vitesse": 20,
+          "cap": 40
+        },
+        "tempete": {
+          "latitude": 43.43,
+          "longitude": 10.04,
+          "vitesse": 60,
+          "cap": 355,
+          "coeur": 40,
+          "front": 120
+        },
+        "ports": [
+          { "name": "Valence", "lat": 39.4699, "lon": -0.3763 },
+          { "name": "Palma", "lat": 39.551837748094776, "lon": 2.643669831158013 }, 
+          { "name": "Barcelone", "lat": 41.3851, "lon": 2.1734 },
+          { "name": "Marseille", "lat": 43.2965, "lon": 5.3698 },
+          { "name": "Gênes", "lat": 44.40514921698204, "lon": 8.938370623748005 } 
+        ],
+        "equipements": {
+          "stabilisateur": "OFF",
+          "ge1": "OK",
+          "ge2": "OK",
+          "ge3": "OK",
+          "ge4": "OK",
+          "carburant": 60,
+          "puissanceMoteur": 85
+        },
+        "etatNavire": {
+          "tangage": "normal",
+          "roulis": "normal",
+          "lacet": "normal"
+        }
+      }
+    ]
+  }
+  

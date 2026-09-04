@@ -1,0 +1,55 @@
+// Récupérer les informations de la date et de l'heure et les stocker
+function startSimulation() {
+    // ... Autres valeurs récupérées pour la simulation ...
+
+    // Récupérer la date et l'heure de début
+    var startDate = document.getElementById("start-date").value;
+    var startTime = document.getElementById("start-time").value;
+
+    // Stocker la date et l'heure dans le localStorage
+    localStorage.setItem("simulationStartDate", startDate);
+    localStorage.setItem("simulationStartTime", startTime);
+
+    alert("Téléportation en cours pour tous les éléments sélectionnés.");
+    window.open("StarwhiteExplorer.html");
+}
+
+// Initialisation de la date et de l'heure sur la carte
+function initializeDateTime() {
+    // Récupérer la date et l'heure du localStorage
+    var simulationStartDate = localStorage.getItem("simulationStartDate") || "2024-10-01"; // Valeur par défaut
+    var simulationStartTime = localStorage.getItem("simulationStartTime") || "12:00";      // Valeur par défaut
+
+    // Combiner la date et l'heure dans un format lisible
+    var formattedDateTime = `${simulationStartDate} ${simulationStartTime}`;
+
+    // Afficher la date et l'heure de simulation sur la carte
+    L.control
+        .text({
+            position: "bottomright",
+            content: `<div style="background: white; padding: 10px; border: 1px solid #ccc;">
+                        <b>Date & Heure de Simulation :</b><br>${formattedDateTime}
+                      </div>`,
+        })
+        .addTo(map);
+
+    console.log(`Simulation démarrée à : ${formattedDateTime}`);
+}
+
+// Ajouter un contrôle personnalisé pour afficher la date et l'heure de la simulation
+L.Control.Text = L.Control.extend({
+    onAdd: function () {
+        var div = L.DomUtil.create("div", "simulation-time");
+        div.innerHTML = `<div style="background: white; padding: 10px; border: 1px solid #ccc;">
+                          <b>Date & Heure de Simulation :</b><br>${formattedDateTime}
+                         </div>`;
+        return div;
+    },
+});
+
+L.control.text = function (opts) {
+    return new L.Control.Text(opts);
+};
+
+// Appeler la fonction `initializeDateTime` après le chargement de la carte
+initializeDateTime();

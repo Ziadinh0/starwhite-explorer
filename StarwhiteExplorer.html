@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Starwhite Explorer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="sw.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <!-- BOUTONS DATA ET CONTACT -->
+    <div class="buttons-bar">
+        <div style="display: flex; gap: 8px; justify-content: flex-start;">
+            <a href="Data.html?mode=view" target="_blank" style="padding: 8px 14px; background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); color: #60a5fa; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.background='rgba(56, 189, 248, 0.3)';" onmouseout="this.style.background='rgba(56, 189, 248, 0.2)';">📊 Data Center</a>
+            <a href="Contact.html?mode=view" target="_blank" style="padding: 8px 14px; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: #d8b4fe; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.background='rgba(168, 85, 247, 0.3)';" onmouseout="this.style.background='rgba(168, 85, 247, 0.2)';">📞 Contact</a>
+        </div>
+    </div>
+
+    <!-- Affichage du Niveau de Vigilance -->
+
+    <div class="legend">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
+            <h3 style="margin: 0;">Légende</h3>
+        </div>
+        <p><img src="assets/images/navire.png" width="20" height="20"> <strong>SW Explorer</strong></p>
+        <p><img src="assets/images/escale.png" width="20" height="20"> Ports d'escales</p>
+        <p><img src="assets/images/closest_port.png" width="20" height="20"> Ports les plus proches (6)</p>
+        <p><img src="assets/images/small_port.png" width="10" height="10"> Autres ports</p>
+        <p><span style="color:red;">⬤</span> Cœur de la tempête</p>
+        <p><span style="color:orange;">⬤</span> Front de la tempête</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/bbecquet/Leaflet.RotatedMarker@master/leaflet.rotatedMarker.js"></script>
+    <script src="sw.js"></script>
+
+    <div class="top-dashboard">
+        <div class="dashboard-card nav-card">
+            <div class="nav-label nav-label-left">CAP</div>
+            <div class="compass-widget">
+                <div class="compass-dial">
+                    <svg class="compass-svg" viewBox="0 0 180 180" aria-label="Boussole">
+                        <defs>
+                            <linearGradient id="speed-arc-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#38bdf8"></stop>
+                                <stop offset="100%" stop-color="#60a5fa"></stop>
+                            </linearGradient>
+                        </defs>
+                        <path id="speed-arc-track" class="speed-arc-track"></path>
+                        <path id="speed-arc-redzone" class="speed-arc-redzone"></path>
+                        <path id="speed-arc-progress" class="speed-arc-progress"></path>
+                        <path id="speed-arc-progress-red" class="speed-arc-progress-red"></path>
+                        <g id="speed-ticks" class="speed-ticks"></g>
+                        <line id="speed-needle" class="speed-needle" x1="90" y1="90" x2="90" y2="36"></line>
+                        <circle class="speed-needle-hub" cx="90" cy="90" r="2.6"></circle>
+                        <text id="speed-display-center" class="speed-display-center" x="90" y="110" text-anchor="middle">0</text>
+                        <text id="speed-min-label" class="speed-min-label">0</text>
+                        <text id="speed-max-label" class="speed-max-label">30</text>
+                        <circle class="compass-circle" cx="90" cy="90" r="86"></circle>
+                        <g id="compass-ticks" class="compass-ticks"></g>
+                    </svg>
+                    <div class="compass-label compass-label-top">0</div>
+                    <div class="compass-label compass-label-right">90</div>
+                    <div class="compass-label compass-label-bottom">180</div>
+                    <div class="compass-label compass-label-left">270</div>
+                    <div id="compass-arrow" class="compass-arrow"></div>
+                    <span id="ship-cap-display" class="cap-tip-label">10°</span>
+                </div>
+            </div>
+            <div class="nav-label nav-label-right">
+                <div class="speed-label-container">
+                    <div>VITESSE</div>
+                    <label class="speed-format-toggle">
+                        <input type="checkbox" id="speed-format-toggle" />
+                        <span id="speed-format-label">nœuds</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card status-card">
+            <div class="status-block stabilite-inline">
+                <span class="stabilite-label"><strong>Stabilité du navire :</strong></span>
+                <span id="stabilite-status" class="status normal status-main stabilite-value">Normal</span>
+            </div>
+            <div class="status-block">
+                <div class="status-title"><strong>Groupe électrogène</strong></div>
+                <div class="generator-grid">
+                    <div class="generator-item">
+                        <span id="ge1-status" class="status ok generator-status">1</span>
+                    </div>
+                    <div class="generator-item">
+                        <span id="ge2-status" class="status ok generator-status">2</span>
+                    </div>
+                    <div class="generator-item">
+                        <span id="ge3-status" class="status ok generator-status">3</span>
+                    </div>
+                    <div class="generator-item">
+                        <span id="ge4-status" class="status danger generator-status">4</span>
+                    </div>
+                </div>
+            </div>
+            <div class="status-footer">Stabilisateur : <span id="stabilisateur-status" class="status off">OFF</span></div>
+        </div>
+
+        <div class="dashboard-card gauges-card">
+            <div class="gauge-block">
+                <div class="gauge-header">
+                    <span>Carburant</span>
+                    <span id="carburant-status">86 %</span>
+                </div>
+                <div class="gauge-track">
+                    <div id="carburant-gauge-fill" class="gauge-fill fuel-fill" style="width: 86%;"></div>
+                </div>
+            </div>
+            <div class="gauge-block">
+                <div class="gauge-header">
+                    <span>Puissance électrique</span>
+                    <span id="puissance-electrique-status">90 %</span>
+                </div>
+                <div class="gauge-track">
+                    <div id="puissance-electrique-gauge-fill" class="gauge-fill power-fill" style="width: 90%;"></div>
+                </div>
+            </div>
+            <div class="gauge-block">
+                <div class="gauge-header">
+                    <span>Puissance moteur</span>
+                    <span id="puissance-moteur-status">77 %</span>
+                </div>
+                <div class="gauge-track">
+                    <div id="puissance-moteur-gauge-fill" class="gauge-fill engine-fill" style="width: 77%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panneau de Vigilance -->
+    <div id="vigilanceDisplay" class="vigilance-panel">
+    </div>
+
+    <!-- Panneau Panne Cyber -->
+    <div id="cyberFailurePanel" class="cyber-failure-panel" style="display: none;">
+        <div class="cyber-failure-content">
+            <div class="cyber-signal-lost">SIGNAL PERDU</div>
+            <div class="cyber-coords">
+                <div class="cyber-coords-label">Dernière localisation GPS</div>
+                <div class="cyber-coords-value" id="cyberFailureCoords">--:--</div>
+            </div>
+            <div class="cyber-timer" id="cyberTimerDisplay">
+                <div class="cyber-timer-label">Temps écoulé</div>
+                <div class="cyber-timer-value" id="cyberTimerValue">00:00:00.00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="time-and-settings">
+        <div class="distance-format-selector">
+            <label>
+                <input type="checkbox" id="distance-format-toggle" />
+                <span id="distance-format-label">MN</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Indicateur de Stabilité -->
+    <div class="stability-indicator">
+        <div class="stability-level">
+            <!-- Lignes de repère -->
+            <div class="stability-line stability-line-horizontal"></div>
+            <div class="stability-line stability-line-vertical"></div>
+            <!-- Cercle au centre -->
+            <div class="stability-center-circle"></div>
+            <!-- Bille de stabilité -->
+            <div class="stability-ball" id="stabilityBall"></div>
+        </div>
+        <div class="stability-label" id="stabilityLabel">Normal</div>
+    </div>
+
+</body>
+
+</html>
